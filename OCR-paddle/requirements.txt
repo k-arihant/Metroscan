@@ -1,0 +1,10 @@
+# Food/Product Label Compliance OCR Pipeline Dependencies
+# GPU engine: PaddleOCR 3.7.0 + PaddlePaddle GPU 3.3.1 (CUDA 12, RTX 3050)
+# paddlepaddle-gpu==3.3.1  # already installed in .venv-gpu; listed for documentation
+paddleocr==3.7.0
+opencv-python>=4.10.0
+numpy>=1.26.0
+Pillow>=10.0.0
+scikit-image>=0.22.0
+scipy>=1.11.0
+pytest>=8.0.0

@@ -1,0 +1,91 @@
+{
+  "test.jpeg": {
+    "product_name": "Mahabhringraj Tel",
+    "net_quantity": "200 ml",
+    "mrp": "360.00",
+    "unit_sale_price": "1.80",
+    "batch_number": "WD260621A",
+    "manufacturing_date": "06/2026",
+    "expiry_date": "05/2029",
+    "license_number": "ND/AYU/60",
+    "manufacturer": "Siddhayu Ayurvedic Research Foundation Pvt. Ltd."
+  },
+  "t1.jpeg": {
+    "product_name": "Lasan Chatni",
+    "net_quantity": "100 g",
+    "mrp": "38",
+    "manufacturing_date": "24/07/2026",
+    "expiry_date": "23/10/2026",
+    "license_number": "10013021000869",
+    "manufacturer": "MAHAVIR NAMKEENS PVT. LTD."
+  },
+  "t2.jpeg": {
+    "net_quantity": "400 g",
+    "mrp": "220.00",
+    "unit_sale_price": "0.55/g",
+    "batch_number": "62H127KI",
+    "manufacturing_date": "26/08/2026",
+    "expiry_date": "25/01/2027",
+    "license_number": "13618011000083"
+  },
+  "t3.jpeg": {
+    "net_quantity": "35 g",
+    "mrp": "22.00",
+    "unit_sale_price": "0.62/g",
+    "batch_number": "MS180",
+    "manufacturing_date": "07/2026",
+    "expiry_date": "01/2027"
+  },
+  "t4.jpeg": {
+    "product_name": "AATA SALT BISCUITS",
+    "net_quantity": "200 g",
+    "mrp": "110",
+    "manufacturing_date": "20/08/2026",
+    "expiry_date": "20/09/2026",
+    "license_number": "13614011001808"
+  },
+  "t5.jpeg": {
+    "product_name": "Almond Kernels",
+    "net_quantity": "500 g",
+    "mrp": "699.00",
+    "unit_sale_price": "1.40",
+    "batch_number": "AN2607046",
+    "manufacturing_date": "02/07/2026",
+    "expiry_date": "29/12/2026",
+    "license_number": "10020022011411"
+  },
+  "t6.jpeg": {
+    "mrp": "120.00",
+    "manufacturing_date": "21/03/2026",
+    "expiry_date": "16/11/2026",
+    "batch_number": "B 03 269B"
+  },
+  "t7.jpeg": {
+    "net_quantity": "1 kg",
+    "mrp": "430.00",
+    "unit_sale_price": "0.43/g",
+    "batch_number": "61970120",
+    "manufacturing_date": "16/07/2026",
+    "expiry_date": "15/04/2027",
+    "license_number": "10015021001645"
+  },
+  "t8.jpeg": {
+    "net_quantity": "1 kg",
+    "mrp": "430.00",
+    "license_number": "10015021001645"
+  },
+  "t9.jpeg": {
+    "product_name": "California ALMOND NUTS",
+    "net_quantity": "250 g"
+  },
+  "t10.jpeg": {
+    "product_name": "Bikaneri Bhujia"
+  },
+  "t11.jpeg": {
+    "net_quantity": "1 N Liquid Refill 45 ml",
+    "mrp": "100.00",
+    "unit_sale_price": "2.22/ml",
+    "batch_number": "U6DL122TP",
+    "manufacturing_date": "09/12/2025"
+  }
+}

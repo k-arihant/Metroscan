@@ -1,0 +1,714 @@
+FOOD & PRODUCT LABEL COMPLIANCE OCR
+GPU SETUP GUIDE FOR A NEW WINDOWS LAPTOP
+============================================================
+
+Purpose
+-------
+This document explains how to take the OCR-paddle project from the ZIP file
+and run it on another Windows laptop using an NVIDIA GPU.
+
+The project was developed and verified with:
+
+    Python                  3.12.10
+    PaddlePaddle GPU        3.3.1
+    PaddleOCR                3.7.0
+    Paddle CUDA build        12.6
+    cuDNN                    9.9.0
+    NVIDIA GPU               RTX 3050 Laptop GPU (original machine)
+    Project device           gpu:0
+
+IMPORTANT:
+The RTX 3050 is NOT required. Another compatible NVIDIA GPU can be used.
+The important requirements are:
+    - Windows
+    - NVIDIA GPU
+    - Recent NVIDIA graphics driver compatible with CUDA 12.6
+    - Python 3.12.x
+    - PaddlePaddle GPU 3.3.1 CUDA 12.6 build
+
+Do NOT copy .venv or .venv-gpu from the original computer.
+Create a fresh .venv-gpu on the new laptop.
+
+
+============================================================
+1. EXTRACT THE ZIP
+============================================================
+
+Extract the ZIP to a convenient location, for example:
+
+    C:\Projects\OCR-paddle
+
+After extraction, open PowerShell in the project folder.
+
+Example:
+
+    cd C:\Projects\OCR-paddle
+
+You should see:
+
+    main.py
+    config.py
+    requirements.txt
+    GPU_SETUP.md
+    README.md
+    src\
+    tests\
+    tools\
+    images\
+    output\
+
+
+============================================================
+2. CHECK THAT THE LAPTOP HAS AN NVIDIA GPU
+============================================================
+
+Open PowerShell and run:
+
+    nvidia-smi
+
+A working NVIDIA installation should display information such as:
+
+    NVIDIA GPU name
+    Driver Version
+    CUDA Version
+    GPU memory
+
+If 'nvidia-smi' is not recognized:
+    1. Install/update the NVIDIA graphics driver.
+    2. Restart Windows.
+    3. Run 'nvidia-smi' again.
+
+You do NOT need to install the full NVIDIA CUDA Toolkit just to run this
+project. The project uses the CUDA 12.6 Paddle wheel and Python NVIDIA
+runtime packages inside the virtual environment.
+
+The NVIDIA driver is still required because it provides the interface
+between Windows and the physical GPU.
+
+
+============================================================
+3. INSTALL PYTHON 3.12
+============================================================
+
+Use Python 3.12.x.
+
+Recommended:
+    Python 3.12.10 or another Python 3.12 release.
+
+Check the installed version:
+
+    py --version
+
+or:
+
+    python --version
+
+Expected:
+
+    Python 3.12.x
+
+IMPORTANT:
+Do not use Python 3.14 for this project.
+
+If several Python versions are installed, explicitly use Python 3.12:
+
+    py -3.12 --version
+
+
+============================================================
+4. CREATE A FRESH GPU VIRTUAL ENVIRONMENT
+============================================================
+
+From the project directory:
+
+    py -3.12 -m venv .venv-gpu
+
+Activate it:
+
+    .\.venv-gpu\Scripts\Activate.ps1
+
+After activation, PowerShell should show something similar to:
+
+    (.venv-gpu) PS C:\Projects\OCR-paddle>
+
+Verify that Python points into the virtual environment:
+
+    python -c "import sys; print(sys.executable)"
+
+Expected path should end with:
+
+    .venv-gpu\Scripts\python.exe
+
+
+If PowerShell blocks activation
+--------------------------------
+
+If you get an execution-policy error, you can use:
+
+    Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+
+Then activate again:
+
+    .\.venv-gpu\Scripts\Activate.ps1
+
+Alternatively, you can run the virtual-environment Python directly
+without activating it.
+
+
+============================================================
+5. UPGRADE PIP
+============================================================
+
+Inside the activated environment:
+
+    python -m pip install --upgrade pip setuptools wheel
+
+
+============================================================
+6. INSTALL PADDLEPADDLE GPU 3.3.1
+============================================================
+
+THIS STEP IS IMPORTANT.
+
+Do NOT install the normal CPU package:
+
+    paddlepaddle
+
+Install the GPU package from the official Paddle CUDA 12.6 package source:
+
+    python -m pip install paddlepaddle-gpu==3.3.1 -i https://www.paddlepaddle.org.cn/packages/stable/cu126/
+
+This project specifically uses:
+
+    paddlepaddle-gpu==3.3.1
+    CUDA 12.6 build
+
+
+============================================================
+7. INSTALL THE CUDA/cuDNN RUNTIME PACKAGES
+============================================================
+
+The project's verified environment used these versions:
+
+    nvidia-cudnn-cu12==9.9.0.52
+    nvidia-cuda-runtime-cu12==12.6.77
+    nvidia-cublas-cu12==12.6.4.1
+
+Install them inside .venv-gpu:
+
+    python -m pip install nvidia-cudnn-cu12==9.9.0.52
+    python -m pip install nvidia-cuda-runtime-cu12==12.6.77
+    python -m pip install nvidia-cublas-cu12==12.6.4.1
+
+Why the exact cuDNN version matters
+-----------------------------------
+
+PaddlePaddle 3.3.1 is built against cuDNN 9.9 in this project.
+
+Some Windows installations of PaddlePaddle may pull an older cuDNN
+dependency automatically. If Paddle reports a warning similar to:
+
+    The installed Paddle is compiled with CUDNN 9.9, but CUDNN
+    version in your machine is 9.5 ...
+
+then install the exact project version:
+
+    python -m pip install --upgrade --force-reinstall nvidia-cudnn-cu12==9.9.0.52
+
+Then verify the DLL version using:
+
+    (Get-Item '.\.venv-gpu\Lib\site-packages\nvidia\cudnn\bin\cudnn64_9.dll').VersionInfo.FileVersion
+
+Expected:
+
+    9.9.0.52
+
+
+============================================================
+8. INSTALL THE PROJECT DEPENDENCIES
+============================================================
+
+Now install the project's requirements:
+
+    python -m pip install -r requirements.txt
+
+The requirements file installs:
+
+    paddleocr==3.7.0
+    opencv-python
+    numpy
+    Pillow
+    scikit-image
+    scipy
+    pytest
+
+NOTE:
+The current requirements.txt intentionally does not install
+paddlepaddle-gpu automatically because the GPU package needs to come
+from the CUDA-specific Paddle package source.
+
+Therefore, install PaddlePaddle GPU FIRST as described in Step 6.
+
+
+============================================================
+9. VERIFY PADDLE GPU
+============================================================
+
+Run:
+
+    python -c "import paddle; print('Paddle:', paddle.__version__); print('CUDA Compiled:', paddle.is_compiled_with_cuda()); print('CUDA:', paddle.version.cuda()); print('GPU Count:', paddle.device.cuda.device_count()); print('GPU:', paddle.device.cuda.get_device_name(0))"
+
+A successful setup should show approximately:
+
+    Paddle: 3.3.1
+    CUDA Compiled: True
+    CUDA: 12.6
+    GPU Count: 1
+    GPU: <your NVIDIA GPU name>
+
+The GPU name does NOT need to be RTX 3050.
+
+
+============================================================
+10. RUN THE PROJECT'S GPU DIAGNOSTIC
+============================================================
+
+The ZIP contains:
+
+    tools\diagnose_gpu.py
+
+Run:
+
+    python tools\diagnose_gpu.py
+
+This checks:
+
+    - Python interpreter
+    - Virtual environment
+    - CUDA environment variables
+    - NVIDIA/Paddle packages
+    - cuDNN DLL
+    - cuDNN runtime version
+    - Paddle CUDA support
+    - GPU device count
+    - GPU name
+    - GPU tensor computation
+
+Look for:
+
+    [SUCCESS] GPU tensor computation executed cleanly.
+
+
+============================================================
+11. VERIFY ACTUAL PADDLEOCR GPU INFERENCE
+============================================================
+
+Run:
+
+    python -c "from paddleocr import PaddleOCR; ocr = PaddleOCR(lang='en', device='gpu:0'); r = ocr.predict(r'.\images\test.jpeg'); print('OCR SUCCESS')"
+
+If this prints:
+
+    OCR SUCCESS
+
+then PaddleOCR itself is able to perform GPU inference.
+
+
+============================================================
+12. RUN THE OCR PROJECT
+============================================================
+
+Single image:
+
+    python main.py images\test.jpeg
+
+Save JSON explicitly:
+
+    python main.py images\test.jpeg --save-output output
+
+The generated file will be:
+
+    output\test_ocr.json
+
+
+============================================================
+13. PROCESS ALL IMAGES IN THE IMAGES FOLDER
+============================================================
+
+Run:
+
+    python main.py --dir images --save-output output
+
+The project will process supported images such as:
+
+    .jpg
+    .jpeg
+    .png
+    .webp
+    .bmp
+
+JSON files are saved using:
+
+    <image_name>_ocr.json
+
+Example:
+
+    images\t1.jpeg
+        ->
+    output\t1_ocr.json
+
+
+============================================================
+14. RUN THE FULL COMPLIANCE PIPELINE
+============================================================
+
+For Legal Metrology / Rule 7 analysis:
+
+    python main.py images\test.jpeg --compliance --save-output output
+
+For multiple images:
+
+    python main.py --dir images --compliance --save-output output
+
+
+============================================================
+15. RUN THE TEST SUITE
+============================================================
+
+Run:
+
+    python -m pytest tests\ -v --tb=short
+
+The test suite checks project functionality including:
+
+    - field extraction
+    - layout association
+    - dot-matrix processing
+    - standardized JSON output
+    - compliance-related logic
+
+
+============================================================
+16. MONITOR GPU USAGE WHILE OCR IS RUNNING
+============================================================
+
+Open a SECOND PowerShell window.
+
+Run:
+
+    nvidia-smi -l 1
+
+This refreshes GPU statistics every second.
+
+You can observe:
+
+    GPU utilization
+    GPU memory usage
+    temperature
+    running processes
+
+Windows Task Manager can also be used:
+
+    Ctrl + Shift + Esc
+        ->
+    Performance
+        ->
+    GPU
+
+Run the OCR pipeline in the first terminal while watching the GPU in
+the second terminal.
+
+
+============================================================
+17. FIRST-RUN MODEL DOWNLOAD
+============================================================
+
+The first PaddleOCR execution may take considerably longer than later
+runs.
+
+PaddleOCR/PaddleX may download model files into the user's local cache.
+
+This is normal.
+
+The first run may therefore show:
+
+    Creating model...
+    Model files...
+    Downloading...
+    Loading...
+
+Once the models are cached, later runs should start faster.
+
+Internet access is required for the first model download unless the
+required model cache is separately transferred to the new machine.
+
+
+============================================================
+18. COMMON PROBLEMS
+============================================================
+
+PROBLEM A: "No module named paddle"
+-----------------------------------
+
+Run:
+
+    python -m pip install paddlepaddle-gpu==3.3.1 -i https://www.paddlepaddle.org.cn/packages/stable/cu126/
+
+Then verify:
+
+    python -c "import paddle; print(paddle.__version__)"
+
+
+PROBLEM B: Paddle says CUDA is False
+-------------------------------------
+
+Run:
+
+    python -c "import paddle; print(paddle.is_compiled_with_cuda())"
+
+If it prints:
+
+    False
+
+then the wrong Paddle package is installed.
+
+Check:
+
+    python -m pip show paddlepaddle
+    python -m pip show paddlepaddle-gpu
+
+If CPU Paddle is installed, remove it:
+
+    python -m pip uninstall paddlepaddle -y
+
+Then install:
+
+    python -m pip install paddlepaddle-gpu==3.3.1 -i https://www.paddlepaddle.org.cn/packages/stable/cu126/
+
+
+PROBLEM C: "cudnn64_9.dll" error
+--------------------------------
+
+First check:
+
+    Test-Path '.\.venv-gpu\Lib\site-packages\nvidia\cudnn\bin\cudnn64_9.dll'
+
+If False, reinstall cuDNN:
+
+    python -m pip install --force-reinstall nvidia-cudnn-cu12==9.9.0.52
+
+
+PROBLEM D: cuDNN 9.5 vs 9.9 warning
+------------------------------------
+
+Install:
+
+    python -m pip install --upgrade --force-reinstall nvidia-cudnn-cu12==9.9.0.52
+
+Then verify:
+
+    (Get-Item '.\.venv-gpu\Lib\site-packages\nvidia\cudnn\bin\cudnn64_9.dll').VersionInfo.FileVersion
+
+
+PROBLEM E: GPU is not detected
+-------------------------------
+
+Run:
+
+    nvidia-smi
+
+If Windows cannot see the GPU, this is an NVIDIA driver/hardware
+problem rather than an OCR project problem.
+
+If nvidia-smi works, run:
+
+    python tools\diagnose_gpu.py
+
+
+PROBLEM F: Python version problem
+---------------------------------
+
+Run:
+
+    python --version
+
+The project should use:
+
+    Python 3.12.x
+
+If the wrong Python is being used, recreate the environment explicitly:
+
+    deactivate
+    rmdir /s /q .venv-gpu
+
+From PowerShell, if the previous command does not work, use:
+
+    Remove-Item -Recurse -Force .venv-gpu
+
+Then:
+
+    py -3.12 -m venv .venv-gpu
+    .\.venv-gpu\Scripts\Activate.ps1
+
+
+PROBLEM G: OCR works but uses CPU
+----------------------------------
+
+Check:
+
+    python -c "import paddle; print(paddle.is_compiled_with_cuda()); print(paddle.device.get_device())"
+
+Expected:
+
+    True
+    gpu:0
+
+Also check config.py:
+
+    PADDLE_DEVICE = 'gpu:0'
+
+Do not change this to 'cpu' if GPU execution is required.
+
+
+============================================================
+19. CLEAN INSTALL PROCEDURE
+============================================================
+
+If the setup becomes corrupted, the safest approach is to delete only
+the virtual environment and rebuild it.
+
+From the project directory:
+
+    deactivate
+
+    Remove-Item -Recurse -Force .venv-gpu
+
+Then repeat:
+
+    py -3.12 -m venv .venv-gpu
+    .\.venv-gpu\Scripts\Activate.ps1
+
+    python -m pip install --upgrade pip setuptools wheel
+
+    python -m pip install paddlepaddle-gpu==3.3.1 -i https://www.paddlepaddle.org.cn/packages/stable/cu126/
+
+    python -m pip install nvidia-cudnn-cu12==9.9.0.52
+    python -m pip install nvidia-cuda-runtime-cu12==12.6.77
+    python -m pip install nvidia-cublas-cu12==12.6.4.1
+
+    python -m pip install -r requirements.txt
+
+    python tools\diagnose_gpu.py
+
+
+============================================================
+20. RECOMMENDED INSTALLATION ORDER - SHORT VERSION
+============================================================
+
+For a completely fresh NVIDIA Windows laptop:
+
+    1. Install/update NVIDIA GPU driver
+    2. Install Python 3.12.x
+    3. Extract OCR-paddle
+    4. Open PowerShell in OCR-paddle
+    5. Create .venv-gpu
+    6. Activate .venv-gpu
+    7. Upgrade pip
+    8. Install PaddlePaddle GPU 3.3.1 from the CUDA 12.6 source
+    9. Install cuDNN 9.9.0.52
+   10. Install CUDA runtime 12.6.77
+   11. Install cuBLAS 12.6.4.1
+   12. Install requirements.txt
+   13. Run diagnose_gpu.py
+   14. Run PaddleOCR smoke test
+   15. Run main.py
+
+
+The exact command sequence is:
+
+    py -3.12 -m venv .venv-gpu
+
+    .\.venv-gpu\Scripts\Activate.ps1
+
+    python -m pip install --upgrade pip setuptools wheel
+
+    python -m pip install paddlepaddle-gpu==3.3.1 -i https://www.paddlepaddle.org.cn/packages/stable/cu126/
+
+    python -m pip install nvidia-cudnn-cu12==9.9.0.52
+    python -m pip install nvidia-cuda-runtime-cu12==12.6.77
+    python -m pip install nvidia-cublas-cu12==12.6.4.1
+
+    python -m pip install -r requirements.txt
+
+    python tools\diagnose_gpu.py
+
+    python main.py images\test.jpeg
+
+
+============================================================
+21. IMPORTANT FILES IN THIS PROJECT
+============================================================
+
+Keep these files/folders when transferring the project:
+
+    main.py
+    config.py
+    requirements.txt
+    README.md
+    GPU_SETUP.md
+    src\
+    tests\
+    tools\
+    images\
+    output\
+
+Do NOT transfer:
+
+    .venv\
+    .venv-gpu\
+    __pycache__\
+    .pytest_cache\
+    .vscode\
+
+The virtual environment should be recreated on each computer.
+
+
+============================================================
+22. FINAL GPU CHECKLIST
+============================================================
+
+Before declaring the new laptop ready, confirm all of these:
+
+    [ ] NVIDIA driver installed
+    [ ] nvidia-smi works
+    [ ] Python 3.12.x installed
+    [ ] .venv-gpu created
+    [ ] .venv-gpu activated
+    [ ] paddlepaddle-gpu 3.3.1 installed
+    [ ] Paddle reports CUDA Compiled = True
+    [ ] GPU device count is >= 1
+    [ ] cuDNN DLL exists
+    [ ] cuDNN version is 9.9.0.52
+    [ ] Paddle CUDA version is 12.6
+    [ ] Paddle GPU tensor test succeeds
+    [ ] PaddleOCR smoke test succeeds
+    [ ] main.py processes images successfully
+    [ ] JSON output appears in output\
+    [ ] nvidia-smi shows GPU activity during inference
+
+
+============================================================
+23. OFFICIAL REFERENCE
+============================================================
+
+PaddlePaddle CUDA 12.6 package source:
+
+    https://www.paddlepaddle.org.cn/packages/stable/cu126/
+
+The installation command used by this project is:
+
+    python -m pip install paddlepaddle-gpu==3.3.1 -i https://www.paddlepaddle.org.cn/packages/stable/cu126/
+
+
+END OF GUIDE
+============================================================

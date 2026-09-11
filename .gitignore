@@ -1,0 +1,96 @@
+# =================================================================
+# METROSCAN MASTER GITIGNORE CONFIGURATION
+# Production-grade exclusions for Monorepo (Backend + Web + Mobile)
+# =================================================================
+
+# ── 1. Secrets & Environment Configurations (CRITICAL) ───────────
+.env
+*.env
+*.env.local
+*.env.*.local
+backend/.env
+frontend/.env
+mobile/.env
+
+# ── 2. Python, Bytecode & Virtual Environments ───────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+metroscan.db
+backend/metroscan.db
+backend/uploads/
+uploads/
+
+# ── 3. Heavy Machine Learning Model Weights (>100MB Git Limit) ───
+backend/weights/*.pt
+backend/weights/*.bin
+backend/weights/*.onnx
+backend/weights/*.safetensors
+backend/weights/paddleocr_en/
+backend/weights/trocr_printed/
+OCR-paddle/weights/
+OCR-paddle/output/
+
+# ── 4. Web Frontend (React + Vite + Node) ────────────────────────
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+dist-ssr/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.vite/
+frontend/.vite/
+
+# ── 5. Mobile App (Flutter / Dart / Android) ─────────────────────
+.dart_tool/
+mobile/.dart_tool/
+mobile/build/
+.gradle/
+mobile/android/.gradle/
+.flutter-plugins
+.flutter-plugins-dependencies
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/.metadata
+*.lock
+*.apk
+*.aab
+
+# ── 6. Temporary Files, Browser Profiles & OS Caches ─────────────
+tmp_chrome_profile/
+*.tmp
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── 7. IDE & Editor Artifacts ────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
